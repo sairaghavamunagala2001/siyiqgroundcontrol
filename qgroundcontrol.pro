@@ -12,7 +12,7 @@ QMAKE_PROJECT_DEPTH = 0 # undocumented qmake flag to force absolute paths in mak
 # These are disabled until proven correct
 DEFINES += QGC_GST_TAISYNC_DISABLED
 DEFINES += QGC_GST_MICROHARD_DISABLED
-
+DEFINES += QGC_AIRMAP_DISABLED
 exists($${OUT_PWD}/qgroundcontrol.pro) {
     error("You must use shadow build (e.g. mkdir build; cd build; qmake ../qgroundcontrol.pro).")
 }
@@ -1560,4 +1560,4 @@ QMAKE_CXXFLAGS += -fexec-charset=UTF-8
 #QMAKE_CXXFLAGS += -execution-charset:utf-8
 #!AndroidBuild {
 #QMAKE_CXXFLAGS += -source-charset:utf-8
-}
+#}

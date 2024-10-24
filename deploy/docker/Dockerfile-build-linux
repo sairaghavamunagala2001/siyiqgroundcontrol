@@ -61,14 +61,32 @@ RUN apt update && apt -y --quiet --no-install-recommends install \
 
 # Install Qt
 COPY deploy/docker/install-qt-linux.sh /tmp/qt/
+RUN chmod +x /tmp/qt/install-qt-linux.sh
 RUN /tmp/qt/install-qt-linux.sh
 
 # Reconfigure locale
 RUN locale-gen en_US.UTF-8 && dpkg-reconfigure locales
 
-# create user with id 1000 to not run commands/generate files as root
-RUN useradd user --create-home --home-dir /home/user --shell /bin/bash --uid 1000
+# Clone the repository (e.g., QGroundControl)
+RUN git clone https://github.com/sairaghavamunagala2001/siyiqgroundcontrol.git /project/source
+
+# Create non-root user with full permissions
+RUN useradd -m -u 1000 -s /bin/bash user
+
+# Set permissions on the project folder
+RUN chown -R user:user /project
+RUN chmod -R 777 /project  # Allows read/write/execute for everyone
+
+# Create build directory with permissions
+RUN mkdir -p /project/build && chown -R user:user /project/build
+RUN chmod -R 777 /project/build  # Adjust as needed
+
+# Switch to non-root user
 USER user
 
+# Set up the working directory and build the project
 WORKDIR /project/build
-CMD qmake /project/source && make -j$(nproc)
+# RUN sed -i 's/-source-charset:utf-8//g' /project/source/qgroundcontrol.pro
+RUN qmake DEFINES=DISABLE_AIRMAP ../source/qgroundcontrol.pro
+# RUN qmake /project/source && make -j$(nproc)
+RUN make 
